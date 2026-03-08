@@ -1,86 +1,78 @@
-fun main(){
-    println(testNegativeAddition())
-    println(testLastDigitCounting())
-    println(testNoDigit())
-    println(testSumWithDoubleHyphen());
-    println(testJumpNegative());
-    println(testWithEmotes());
-}
+import org.junit.Test
+import org.junit.Assert.assertEquals
 
-fun testWithEmotes() : Boolean{
-    return sumNumbersInString("10😊-30") == -20
-}
+class SumNumbersInStringTest {
 
-fun testJumpNegative() : Boolean{
-    return sumNumbersInString("10-a10") == 20
-}
+    @Test
+    fun withEmotes() {
+        assertSum("10😊-30", -20)
+    }
 
-fun testNoDigit() : Boolean{
-    return sumNumbersInString("") == 0
-}
+    @Test
+    fun jumpNegative() {
+        assertSum("10-a10", 20)
+    }
 
-fun testLastDigitCounting() : Boolean{
-    return sumNumbersInString("200a10") == 210
-}
+    @Test
+    fun nothingIn() {
+        assertSum("", 0)
+    }
 
-fun testNegativeAddition() : Boolean{
-    return sumNumbersInString("100-10a") == 90
-}
+    @Test
+    fun onlySpace() {
+        assertSum(" ", 0)
+    }
 
-fun testSumWithDoubleHyphen(): Boolean {
-    return sumNumbersInString("200--20+10") == 190
-}
+    @Test
+    fun lastDigitCounting() {
+        assertSum("200a10", 210)
+    }
 
-//fun sumNumbersInString(text : String): Int{
-//    var digits : String = ""
-//    var sum : Int = 0
-//
-//    for(char in text){
-//        if(char.isDigit()){
-//            digits += char
-//        }
-//
-//        if(!char.isDigit() and digits.isNotEmpty()){
-//            if(digits.toIntOrNull() != null){
-//                sum += digits.toInt()
-//            }
-//            digits = ""
-//        }
-//
-//        if((char == '-') and digits.isEmpty()){
-//            digits += char
-//        }
-//    }
-//
-//    // If the last chars where numbers, add them
-//    if(digits.toIntOrNull() != null){
-//        sum += digits.toInt()
-//    }
-//
-//    return sum
-//}
+    @Test
+    fun negativeAddition() {
+        assertSum("100-10a", 90)
+    }
 
-fun sumNumbersInString(text: String): Int {
-    var digits = ""
-    var sum = 0
+    @Test
+    fun sumWithDoubleHyphen() {
+        assertSum("200--20+10", 190)
+    }
 
-    for (char in text) {
-        if (char.isDigit()) {
-            digits += char
-            continue
+    @Test
+    fun withSpaces() {
+        assertSum("10 10 -30", -10)
+    }
+
+    private fun assertSum(text: String, expected: Int) {
+        assertEquals(expected, sumNumbersInString(text))
+    }
+
+    fun sumNumbersInString(text : String): Int{
+        var digits : String = ""
+        var sum : Int = 0
+
+        var isNegativeSign : Boolean = false
+
+        for(char in text){
+            if(!char.isDigit() and digits.isNotEmpty()){
+                if(digits.toIntOrNull() != null){
+                    sum += digits.toInt()
+                }
+                digits = ""
+            }
+
+            isNegativeSign = ((char == '-') and digits.isEmpty())
+
+            if(char.isDigit() or isNegativeSign){
+                digits += char
+            }
+
         }
 
-        if (digits.isNotEmpty() && digits != "-") {
+        if(digits.toIntOrNull() != null){
             sum += digits.toInt()
         }
 
-        digits = if (char == '-') "-" else ""
+        return sum
     }
-
-    if (digits.isNotEmpty() && digits != "-") {
-        sum += digits.toInt()
-    }
-
-    return sum
 }
-
